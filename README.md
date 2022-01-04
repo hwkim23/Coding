@@ -1,0 +1,4 @@
+- 👋 Hi, I’m @hwkim23
+- 👀 I’m interested in AI
+- 🌱 I’m currently learning everything about coding
+- 📫 How to reach me : eric.hyunwoo@gmail.com
