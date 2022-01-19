@@ -5,78 +5,73 @@ void main() {
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+  MyApp({Key? key}) : super(key: key);
+  List<String> name = ["김현우","최원열","이태환"];
 
   @override
   State<MyApp> createState() => _MyAppState();
 
 }
 class _MyAppState extends State<MyApp> {
-  var name = ["하현우","최원열","이태환"];
+
   var telephone = ["01011112222","01012345678","01088889999"];
-  var isDescending = false;
 
   addName(a) {
     setState(() {
-      name.add(a);
+      widget.name.add(a);
+    });
+  }
+
+  void reorderData(int oldindex, int newindex){
+    setState(() {
+      if(newindex>oldindex){
+        newindex-=1;
+      }
+      final items =widget.name.removeAt(oldindex);
+      widget.name.insert(newindex, items);
+    });
+  }
+
+  void sorting(){
+    setState(() {
+      widget.name.sort();
     });
   }
 
   @override
   build( context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: Column(
-        children: <Widget>[
-          Align(
-            alignment: Alignment.centerRight,
-            child: TextButton.icon(
-              icon: RotatedBox(
-                quarterTurns: 1,
-                child: Icon(Icons.compare_arrows, size: 28),
-              ),
-              label: Text(
-                isDescending ? "역순으로 정렬" : "순서대로 정렬",
-                style: TextStyle(fontSize: 16),),
-              onPressed: () => setState(() => isDescending = !isDescending),
+      appBar: AppBar(
+          actions: <Widget>[
+            IconButton(icon: Icon(Icons.sort_by_alpha),
+                tooltip:"Sort",
+                onPressed: sorting
             ),
-          ),
-          Expanded(
-              child: buildList(),
-          ),
-        ],
+          ]
+      ),
+      body: ReorderableListView(
+        children: <Widget>[
+          for(final items in widget.name)
+            Card(
+              key: ValueKey(items),
+              elevation: 2,
+              child: ListTile(
+                title: Text(items),
+                leading: Image.asset("profile.png"),
+              ),
+            ),
+            ],
+            onReorder: reorderData,
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: (){
           showDialog(context: context, builder: (context){
             return DialogUI(addName: addName);
-          });
+          },);
         },
       ),
     );
   }
-  Widget buildList() => ListView.builder(
-    itemCount: name.length,
-    itemBuilder: (c, i) {
-        final sortedName = name
-          ..sort((a, b) => isDescending ? b.compareTo(a) : a.compareTo(b));
-        final item = sortedName[i];
-
-      return ListTile(
-        leading: Image.asset("profile.png"),
-        title: Text(item),
-        subtitle: Text(telephone[i]),
-        trailing: ElevatedButton(
-          child: Text("삭제"),
-          onPressed: (){
-            setState(() {
-              name.remove(name[i]);
-            });
-          },
-        ),
-      );
-    },
-  );
 }
 
 class DialogUI extends StatelessWidget {
